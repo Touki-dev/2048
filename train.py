@@ -30,8 +30,15 @@ for e in range(episodes):
     if e % 50 == 0:
         t1 = time.time()
         print(t1 - t0)
+
+        with open("time.txt", "a") as fichier:
+            fichier.write(f"Episodes {e} : {t1 - t0} \n")
+
         agent.save(f"models/2048-dqn-{e}.weights.h5")
         
 
 t2 = time.time()
 print(t2 - t0)
+
+with open("time.txt", "a") as fichier:
+    fichier.write(f"Total duration : {t2 - t0}")

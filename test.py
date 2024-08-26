@@ -4,12 +4,15 @@ from game_env import GameEnv  # Assurez-vous que cette classe est correctement d
 from DQN_agent import DQNAgent  # Si vous avez besoin d'utiliser d'autres fonctionnalités de l'agent
 import time
 
-# Charger le modèle sauvegardé
-model = tf.keras.models.load_model('models/2048-dqn-0.weights.h5')
-
 # Initialiser l'environnement
 env = GameEnv(grid_size=4)
 state_size = env.grid_size * env.grid_size
+action_size = 4  # 0: up, 1: down, 2: left, 3: right
+
+agent = DQNAgent(state_size, action_size)
+
+# Chargez les poids
+agent.model.load_weights('models/2048-dqn-0.weights.h5')
 
 # Réinitialiser l'environnement pour commencer un nouvel épisode
 state = env.reset()

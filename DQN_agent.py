@@ -20,8 +20,8 @@ class DQNAgent:
     def _build_model(self):
         # Modèle du réseau neuronal avec Keras
         model = Sequential()
-        model.add(Dense(128, input_dim=self.state_size, activation='relu'))
-        model.add(Dense(128, activation='relu'))
+        model.add(Dense(64, input_dim=self.state_size, activation='relu'))
+        model.add(Dense(64, activation='relu'))
         model.add(Dense(self.action_size, activation='linear'))
         model.compile(loss='mse', optimizer=tf.keras.optimizers.Adam(learning_rate=self.learning_rate))
         return model
@@ -38,6 +38,7 @@ class DQNAgent:
 
     def replay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
+        states, targets_f = [], []
         for state, action, reward, next_state, done in minibatch:
             target = reward
             if not done:
@@ -46,9 +47,11 @@ class DQNAgent:
             state = np.reshape(state, [1, self.state_size])
             target_f = self.model.predict(state)
             target_f[0][action] = target
-            self.model.fit(state, target_f, epochs=1, verbose=0)
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay
+            states.append(state)
+            targets_f.append(target_f)
+        
+        # Conversion en array numpy pour des calculs plus rapides en batch
+        self.model.fit(np.vstack(states), np.vstack(targets_f), epochs=1, verbose=0, batch_size=batch_size)
 
     def load(self, name):
         self.model.load_weights(name)
